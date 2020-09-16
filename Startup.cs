@@ -10,6 +10,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using FeedbackService.Models;
 
 namespace FeedbackService
 {
@@ -25,6 +27,12 @@ namespace FeedbackService
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            
+            services.Configure<FeedBackDatabaseSettings>(Configuration.GetSection(nameof(FeedBackDatabaseSettings)));
+            services.AddSingleton<IFeedBackDatabaseSettings>( sp => {
+                sp.GetRequiredService<IOptions<>>().Value;
+            });
+            
             services.AddControllers();
         }
 
