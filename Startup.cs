@@ -11,9 +11,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using FeedbackService.Models;
+using GameSessionFeedback.Models;
+using GameSessionFeedback.Services;
 
-namespace FeedbackService
+namespace GameSessionFeedback
 {
     public class Startup
     {
@@ -28,10 +29,13 @@ namespace FeedbackService
         public void ConfigureServices(IServiceCollection services)
         {
             
-            services.Configure<FeedBackDatabaseSettings>(Configuration.GetSection(nameof(FeedBackDatabaseSettings)));
-            services.AddSingleton<IFeedBackDatabaseSettings>( sp => {
-                sp.GetRequiredService<IOptions<>>().Value;
-            });
+            services.Configure<FeedbackDatabaseSettings>(Configuration.GetSection(nameof(FeedbackDatabaseSettings)));
+            services.AddSingleton<IFeedbackDatabaseSettings>( sp => sp.GetRequiredService<IOptions<FeedbackDatabaseSettings>>().Value);
+
+            services.Configure<GameSessionFeedbackProperties>(Configuration.GetSection(nameof(GameSessionFeedbackProperties)));
+            services.AddSingleton<IGameSessionFeedbackProperties>( sp => sp.GetRequiredService<IOptions<GameSessionFeedbackProperties>>().Value);
+
+            services.AddSingleton<IFeedbackService, FeedbackService>();
             
             services.AddControllers();
         }

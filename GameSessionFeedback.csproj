@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="FeedbackService.sln" />
+    <None Include="GameSessionFeedback.sln" />
   </ItemGroup>
 
   <ItemGroup>
