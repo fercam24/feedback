@@ -23,7 +23,13 @@ namespace GameSessionFeedback.Services
 
         public async Task<IEnumerable<SessionFeedback>> GetSessionFeedbacks(int? rating) {
             try {
-                var feedbacks = await _sessionFeedbacks.Find(sf => sf.Rate == rating).Limit(15).ToListAsync(); 
+                var builder = Builders<SessionFeedback>.Filter;
+                var filter = builder.Empty;
+                if (rating != null) {
+                    filter = builder.Eq(sf => sf.Rate, rating);
+                }
+                
+                var feedbacks = await _sessionFeedbacks.Find(filter).Limit(15).ToListAsync(); 
                 return feedbacks; 
             } catch (Exception ex) {
                 throw ex;
