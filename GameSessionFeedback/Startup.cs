@@ -13,6 +13,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using GameSessionFeedback.Models;
 using GameSessionFeedback.Services;
+using GameSessionFeedback.DbContexts;
 
 namespace GameSessionFeedback
 {
@@ -35,6 +36,7 @@ namespace GameSessionFeedback
             services.Configure<GameSessionFeedbackProperties>(Configuration.GetSection(nameof(GameSessionFeedbackProperties)));
             services.AddSingleton<IGameSessionFeedbackProperties>( sp => sp.GetRequiredService<IOptions<GameSessionFeedbackProperties>>().Value);
 
+            services.AddSingleton<IMongoDbContext, MongoDbContext>();
             services.AddSingleton<IFeedbackService, FeedbackService>();
             
             services.AddControllers();

@@ -1,3 +1,4 @@
+using GameSessionFeedback.DbContexts;
 using GameSessionFeedback.Models;
 using Microsoft.Win32.SafeHandles;
 using MongoDB.Driver;
@@ -11,14 +12,13 @@ namespace GameSessionFeedback.Services
 {
     public class FeedbackService : IFeedbackService
     {
-        private readonly IMongoCollection<SessionFeedback> _sessionFeedbacks;
+        private readonly IMongoDbContext _dbContext;
+        private IMongoCollection<SessionFeedback> _sessionFeedbacks;
 
-        public FeedbackService(IFeedbackDatabaseSettings dbSettings, IGameSessionFeedbackProperties gameSessionFeedbackProperties)
+        public FeedbackService(IMongoDbContext dbContext, IFeedbackDatabaseSettings dbSettings)
         {
-            var client = new MongoClient(dbSettings.ConnectionString);
-            var database = client.GetDatabase(gameSessionFeedbackProperties.GameKey + "_" + gameSessionFeedbackProperties.ServiceName);
-
-            _sessionFeedbacks = database.GetCollection<SessionFeedback>(dbSettings.SessionFeedbacksCollectionName);
+            _dbContext = dbContext;
+            _sessionFeedbacks = _dbContext.GetCollection<SessionFeedback>(dbSettings.SessionFeedbacksCollectionName);
         }
 
         public async Task<IEnumerable<SessionFeedback>> GetSessionFeedbacks(int? rating) {
