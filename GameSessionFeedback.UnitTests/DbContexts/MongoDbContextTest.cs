@@ -1,40 +1,33 @@
 using System;
-using Xunit;
-using Moq;
-using MongoDB.Driver;
 using dotNetTips.Utility.Standard.Tester;
-using GameSessionFeedback.Models;
 using GameSessionFeedback.DbContexts;
-using System.Reflection;
+using GameSessionFeedback.Models;
+using MongoDB.Driver;
+using Moq;
+using Xunit;
 
 namespace GameSessionFeedback.UnitTests.DbContexts
 {
     public class MongoDbContextTest
     {
-        private Mock<IFeedbackDatabaseSettings> _mockDatabaseSettings;
-        private Mock<IGameSessionFeedbackProperties> _mockAppProperties;
-        private Mock<IMongoDatabase> _mockDatabase;
-        private Mock<IMongoClient> _mockClient;
+        private readonly Mock<IGameSessionFeedbackProperties> _mockAppProperties;
+        private readonly Mock<IFeedbackDatabaseSettings> _mockDatabaseSettings;
 
-        public MongoDbContextTest() {
+        public MongoDbContextTest()
+        {
             _mockDatabaseSettings = new Mock<IFeedbackDatabaseSettings>();
             _mockAppProperties = new Mock<IGameSessionFeedbackProperties>();
-            _mockDatabase = new Mock<IMongoDatabase>();
-            _mockClient = new Mock<IMongoClient>();
         }
 
         [Fact]
         public void Success_MongoDbContext_Construct()
         {
             //Arrange
-            string connectionString = "mongodb://" + RandomData.GenerateWord(20);
-            string sessionFeedbacksCollectionName = RandomData.GenerateWord(10);
-            string gameKey = RandomData.GenerateWord(10);
-            string serviceName = RandomData.GenerateWord(10);
+            var sessionFeedbacksCollectionName = RandomData.GenerateWord(10);
 
             //Act
-            var dbContext = getDbContext(connectionString, sessionFeedbacksCollectionName, gameKey, serviceName);
-        
+            var dbContext = GetDbContext(sessionFeedbacksCollectionName);
+
             //Assert
             Assert.NotNull(dbContext);
         }
@@ -43,46 +36,70 @@ namespace GameSessionFeedback.UnitTests.DbContexts
         public void Success_MongoDbContext_GetCollection()
         {
             //Arrange
-            string connectionString = "mongodb://" + RandomData.GenerateWord(20);
-            string sessionFeedbacksCollectionName = RandomData.GenerateWord(10);
-            string gameKey = RandomData.GenerateWord(10);
-            string serviceName = RandomData.GenerateWord(10);
+            var sessionFeedbacksCollectionName = RandomData.GenerateWord(10);
+            var dbContext = GetDbContext(sessionFeedbacksCollectionName);
 
-            var dbContext = getDbContext(connectionString, sessionFeedbacksCollectionName, gameKey, serviceName);
-        
             //Act
             var sessionFeedbacks = dbContext.GetCollection<SessionFeedback>(sessionFeedbacksCollectionName);
-        
+
             //Assert
             Assert.NotNull(sessionFeedbacks);
         }
 
         [Fact]
+        public void Fail_MongoDbContext_GetCollection_WhitespacesCollectionName()
+        {
+            //Arrange
+            var sessionFeedbacksCollectionName = RandomData.GenerateWord(10);
+            var dbContext = GetDbContext(sessionFeedbacksCollectionName);
+
+            //Act
+            var getCollection = dbContext.GetCollection<SessionFeedback>("  ");
+
+            //Assert
+            Assert.Null(getCollection);
+        }
+        
+        [Fact]
+        public void Fail_MongoDbContext_GetCollection_NullCollectionName()
+        {
+            //Arrange
+            var sessionFeedbacksCollectionName = RandomData.GenerateWord(10);
+            var dbContext = GetDbContext(sessionFeedbacksCollectionName);
+
+            //Act
+            var getCollection = dbContext.GetCollection<SessionFeedback>(null);
+
+            //Assert
+            Assert.Null(getCollection);
+        }
+        
+        [Fact]
         public void Fail_MongoDbContext_GetCollection_EmptyCollectionName()
         {
             //Arrange
-            string connectionString = "mongodb://" + RandomData.GenerateWord(20);
-            string sessionFeedbacksCollectionName = RandomData.GenerateWord(10);
-            string gameKey = RandomData.GenerateWord(10);
-            string serviceName = RandomData.GenerateWord(10);
+            var sessionFeedbacksCollectionName = RandomData.GenerateWord(10);
+            var dbContext = GetDbContext(sessionFeedbacksCollectionName);
 
-            var dbContext = getDbContext(connectionString, sessionFeedbacksCollectionName, gameKey, serviceName);
-        
             //Act
-            Action getCollection = () => dbContext.GetCollection<SessionFeedback>("");
-        
+            var getCollection = dbContext.GetCollection<SessionFeedback>(string.Empty);
+
             //Assert
-            ArgumentException exception = Assert.Throws<ArgumentException>(getCollection);
+            Assert.Null(getCollection);
         }
 
+        private IMongoDbContext GetDbContext(string sessionFeedbacksCollectionName)
+        {
+            var connectionString = "mongodb://" + RandomData.GenerateWord(20);
+            var gameKey = RandomData.GenerateWord(10);
+            var serviceName = RandomData.GenerateWord(10);
 
-        private IMongoDbContext getDbContext(string connectionString, string sessionFeedbacksCollectionName, string gameKey, string serviceName) {
-            
-            _mockDatabaseSettings.Setup(s => s.ConnectionString).Returns(connectionString);
-            _mockDatabaseSettings.Setup(s => s.SessionFeedbacksCollectionName).Returns(sessionFeedbacksCollectionName);
+            _mockDatabaseSettings.Setup(settings => settings.ConnectionString).Returns(connectionString);
+            _mockDatabaseSettings.Setup(settings => settings.SessionFeedbacksCollectionName)
+                .Returns(sessionFeedbacksCollectionName);
 
-            _mockAppProperties.Setup(p => p.GameKey).Returns(gameKey);
-            _mockAppProperties.Setup(p => p.ServiceName).Returns(serviceName);
+            _mockAppProperties.Setup(properties => properties.GameKey).Returns(gameKey);
+            _mockAppProperties.Setup(properties => properties.ServiceName).Returns(serviceName);
 
             return new MongoDbContext(_mockDatabaseSettings.Object, _mockAppProperties.Object);
         }

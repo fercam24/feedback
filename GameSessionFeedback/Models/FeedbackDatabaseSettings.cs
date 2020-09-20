@@ -1,6 +1,7 @@
 namespace GameSessionFeedback.Models
 {
-    public class FeedbackDatabaseSettings : IFeedbackDatabaseSettings {
+    public class FeedbackDatabaseSettings : IFeedbackDatabaseSettings
+    {
         public string ConnectionString { get; set; }
         public string SessionFeedbacksCollectionName { get; set; }
         public string GameSessionsCollectionName { get; set; }
@@ -9,9 +10,9 @@ namespace GameSessionFeedback.Models
 
     public interface IFeedbackDatabaseSettings
     {
-         string ConnectionString { get; set; }
-         string SessionFeedbacksCollectionName { get; set; }
-         string GameSessionsCollectionName { get; set; }
-         string UsersCollectionName { get; set; }
+        string ConnectionString { get; set; }
+        string SessionFeedbacksCollectionName { get; set; }
+        string GameSessionsCollectionName { get; set; }
+        string UsersCollectionName { get; set; }
     }
 }
