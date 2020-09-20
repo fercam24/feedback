@@ -26,7 +26,8 @@ namespace GameSessionFeedback.Services
             {
                 var builder = Builders<SessionFeedback>.Filter;
                 var filter = builder.Empty;
-                var options = new FindOptions<SessionFeedback>(){Limit = 15};
+                var sort = Builders<SessionFeedback>.Sort.Descending(feedback => feedback.CreatedOn);
+                var options = new FindOptions<SessionFeedback>(){Limit = 15, Sort = sort};
 
                 if (rating != null)
                 {
@@ -41,6 +42,20 @@ namespace GameSessionFeedback.Services
             {
                 throw ex;
             }
+        }
+
+        public async Task<SessionFeedback> CreateFeedbackAsync(SessionFeedback feedback)
+        {
+            try
+            {
+                await _sessionFeedbacks.InsertOneAsync(feedback);
+            }
+            catch (MongoWriteException ex)
+            {
+                throw ex;
+            }
+            
+            return feedback;
         }
     }
 }

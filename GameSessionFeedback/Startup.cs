@@ -3,6 +3,7 @@ using GameSessionFeedback.Models;
 using GameSessionFeedback.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc.ViewComponents;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -33,6 +34,8 @@ namespace GameSessionFeedback
 
             services.AddSingleton<IMongoDbContext, MongoDbContext>();
             services.AddSingleton<IFeedbackService, FeedbackService>();
+
+            services.AddHostedService<ConfigureDbIndexesService>();
 
             services.AddControllers();
         }

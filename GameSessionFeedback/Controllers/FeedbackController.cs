@@ -8,6 +8,7 @@ using GameSessionFeedback.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using MongoDB.Driver;
 
 namespace GameSessionFeedback.Controllers
 {
@@ -44,25 +45,46 @@ namespace GameSessionFeedback.Controllers
             return Ok(sessionFeedback);
         }
 
-        // [HttpPost("{sessionId}")]
-        // [ProducesResponseType(StatusCodes.Status200OK)]
-        // [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        // public async Task<ActionResult<SessionFeedback>> CreateSessionFeedback(string sessionId, SessionFeedback sessionFeedback)
-        // {
-        //     if (!Request.Headers.ContainsKey(USERID_HEADER_KEY))
-        //     {
-        //         _logger.LogWarning(USERID_HEADER_KEY + " must not be null");
-        //         return BadRequest();
-        //     }
-        //     
-        //     Request.Headers.TryGetValue(USERID_HEADER_KEY, out var userId);
-        //     if (String.IsNullOrWhiteSpace(userId))
-        //     {
-        //         _logger.LogWarning(USERID_HEADER_KEY + " must not be empty");
-        //         return BadRequest();
-        //     }
-        //     
-        //     return await _feedbackService.CreateFeedbackAsync(sessionFeedback);
-        // }
+        [HttpPost("{sessionId}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult<SessionFeedback>> CreateSessionFeedback(string sessionId, [Required, FromBody] SessionFeedback sessionFeedback)
+        {
+            // Check that header userid is present.. Can be replaced by Middleware
+            if (!Request.Headers.ContainsKey(USERID_HEADER_KEY))
+            {
+                _logger.LogWarning(USERID_HEADER_KEY + " must not be null");
+                return BadRequest();
+            }
+
+            Request.Headers.TryGetValue(USERID_HEADER_KEY, out var userId);
+            if (String.IsNullOrWhiteSpace(userId))
+            {
+                _logger.LogWarning(USERID_HEADER_KEY + " must not be empty");
+                return BadRequest();
+            }
+            sessionFeedback.UserId = userId;
+            sessionFeedback.SessionId = sessionId;
+            
+            
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+            
+            try
+            {
+                await _feedbackService.CreateFeedbackAsync(sessionFeedback);
+            }
+            catch (MongoWriteException e)
+            {
+                if (e.WriteError.Category == ServerErrorCategory.DuplicateKey)
+                {
+                    return Conflict();
+                }
+            }
+            
+            return StatusCode(201);
+        }
     }
 }

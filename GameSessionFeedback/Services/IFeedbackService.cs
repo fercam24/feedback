@@ -7,5 +7,6 @@ namespace GameSessionFeedback.Services
     public interface IFeedbackService
     {
         Task<IEnumerable<SessionFeedback>> GetSessionFeedbacksAsync(short? rating);
+        Task<SessionFeedback> CreateFeedbackAsync(SessionFeedback feedback);
     }
 }
