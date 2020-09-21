@@ -1,8 +1,9 @@
 using System;
 using System.ComponentModel.DataAnnotations;
-using System.Text.Json.Serialization;
+using GameSessionFeedback.Utils;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
+using Newtonsoft.Json;
 
 namespace GameSessionFeedback.Models
 {
@@ -10,19 +11,25 @@ namespace GameSessionFeedback.Models
     {
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
+        [JsonProperty("id")]
         public string Id { get; set; }
-
-        [JsonIgnore]
+        
+        [JsonProperty("user")]
         public string UserId { get; set; }
-
-        [JsonIgnore]
+        
+        [JsonProperty("session")]
         public string SessionId { get; set; }
         
+        [Required]
         [Range(1, 5)]
+        [JsonProperty("rating")]
         public short Rate { get; set; }
 
-        public string Comment { get; set; }
-        
-        public DateTime CreatedOn { get; set; } = DateTime.Now;
+        [JsonProperty("comment")]
+        public string Comment { get; set; } = string.Empty;
+            
+        [JsonConverter(typeof(DateFormatConverter), "yyyy-MM-dd hh:mm:ss")]
+        [JsonProperty("feedbackDate")]
+        public DateTime CreatedOn { get; set; }
     }
 }

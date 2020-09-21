@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Reflection;
-using System.Threading;
 using System.Threading.Tasks;
 using dotNetTips.Utility.Standard.Tester;
 using GameSessionFeedback.Controllers;
@@ -74,6 +72,7 @@ namespace GameSessionFeedback.UnitTests.Controllers
             var result = (OkObjectResult) action.Result;
             var feedbacks = result.Value as List<SessionFeedback>;
 
+            //Assert
             Assert.IsType<OkObjectResult>(result);
             _mockFeedbackService.Verify(service => service.GetSessionFeedbacksAsync(null), Times.Once);
             Assert.Equal(_sessionFeedbacks, feedbacks);
@@ -93,6 +92,7 @@ namespace GameSessionFeedback.UnitTests.Controllers
             var result = action.Result as ObjectResult;
             var feedbacks = result.Value as List<SessionFeedback>;
 
+            //Assert
             Assert.IsType<OkObjectResult>(result);
             _mockFeedbackService.Verify(service => service.GetSessionFeedbacksAsync(It.IsAny<short>()), Times.Once);
             Assert.Equal(_sessionFeedbacks, feedbacks);
@@ -109,6 +109,7 @@ namespace GameSessionFeedback.UnitTests.Controllers
             var feedbackController = new FeedbackController(_mockLogger.Object, _mockFeedbackService.Object);
             var action = await feedbackController.GetFeedbacks(6);
 
+            //Assert
             Assert.IsType<BadRequestResult>(action.Result);
             _mockFeedbackService.Verify(service => service.GetSessionFeedbacksAsync(It.IsAny<short>()), Times.Never);
         }
@@ -142,9 +143,10 @@ namespace GameSessionFeedback.UnitTests.Controllers
             {
                 ControllerContext = controllerContext
             };
-            var action = await feedbackController.CreateSessionFeedback(sessionId, new SessionFeedback(){Comment = "", Id = "", Rate = 4});
+            var action = await feedbackController.CreateSessionFeedback(sessionId, new SessionFeedback(){Comment = "", Rate = 4});
             var result = action.Result as StatusCodeResult;
 
+            //Assert
             Assert.IsType<StatusCodeResult>(result);
             Assert.Equal(201, result.StatusCode);
             _mockFeedbackService.Verify(service => service.CreateFeedbackAsync(It.IsAny<SessionFeedback>()), Times.Once);
@@ -182,9 +184,10 @@ namespace GameSessionFeedback.UnitTests.Controllers
             {
                 ControllerContext = controllerContext
             };
-            var action = await feedbackController.CreateSessionFeedback(sessionId, new SessionFeedback(){Comment = "", Id = "", Rate = 4});
+            var action = await feedbackController.CreateSessionFeedback(sessionId, new SessionFeedback(){Comment = "", Rate = 4});
             var result = action.Result as BadRequestResult;
 
+            //Assert
             Assert.IsType<BadRequestResult>(result);
             _mockFeedbackService.Verify(service => service.CreateFeedbackAsync(It.IsAny<SessionFeedback>()), Times.Never);
         }
@@ -218,13 +221,16 @@ namespace GameSessionFeedback.UnitTests.Controllers
             {
                 ControllerContext = controllerContext
             };
-            var action = await feedbackController.CreateSessionFeedback(sessionId, new SessionFeedback(){Comment = "", Id = "", Rate = 4});
+            var action = await feedbackController.CreateSessionFeedback(sessionId, new SessionFeedback(){Comment = "", Rate = 4});
             var result = action.Result as ConflictResult;
 
+            //Assert
             Assert.IsType<ConflictResult>(result);
             _mockFeedbackService.Verify(service => service.CreateFeedbackAsync(It.IsAny<SessionFeedback>()), Times.Once);
         }
-
+        
+        // Mock Duplicate MongoWriteException
+        // Usage of reflection as constructor is private
         private MongoWriteException CreateDuplicateMongoWriteException()
         {
             var connectionId = new ConnectionId(new ServerId(new ClusterId(1), new DnsEndPoint("localhost", 27017)), 2);

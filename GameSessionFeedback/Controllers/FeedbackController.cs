@@ -65,13 +65,8 @@ namespace GameSessionFeedback.Controllers
             }
             sessionFeedback.UserId = userId;
             sessionFeedback.SessionId = sessionId;
-            
-            
-            if (!ModelState.IsValid)
-            {
-                return BadRequest();
-            }
-            
+            sessionFeedback.CreatedOn = DateTime.Now;
+
             try
             {
                 await _feedbackService.CreateFeedbackAsync(sessionFeedback);

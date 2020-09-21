@@ -37,6 +37,7 @@ namespace GameSessionFeedback
 
             services.AddHostedService<ConfigureDbIndexesService>();
 
+            services.AddControllers().AddNewtonsoftJson(options => options.UseMemberCasing());
             services.AddControllers();
         }
 
