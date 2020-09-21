@@ -135,3 +135,21 @@ To run the tests use the following command with dotnet cli. It will exectue unit
 ```
 dotnet test
 ```
+
+## Docker environment
+To run a dockerized version of GameSessionFeedback service you can run the following command 
+```
+docker-compose -f docker-compose.yml up -d --build --remove-orphan
+```
+It will run the service with dedicated mongodb.
+You can reach the API through http://localhost:8000/api/feedback
+
+###Environment variables
+You can override some properties with the following variables:
+
+| ENV_VARIABLE | Default |Description |
+|:--------------|-------- |-------------|
+| GameSessionFeedbackProperties:GameKey | TestGameKey | Game Identifier, used to construct database name for shared database usage |
+| GameSessionFeedbackProperties:ServiceName | MyServiceName | String to name the service, used to construct database name for shared database usage |
+| GameSessionFeedbackProperties:SessionFeedbacksCollectionName | SessionFeedbacks | Name of the collection for SessionFeedbacks |
+| GameSessionFeedbackProperties:ConnectionString | mongodb://root:toor@localhost:27017 | MongoDb Connection string |
