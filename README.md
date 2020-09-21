@@ -153,3 +153,9 @@ You can override some properties with the following variables:
 | GameSessionFeedbackProperties:ServiceName | MyServiceName | String to name the service, used to construct database name for shared database usage |
 | GameSessionFeedbackProperties:SessionFeedbacksCollectionName | SessionFeedbacks | Name of the collection for SessionFeedbacks |
 | GameSessionFeedbackProperties:ConnectionString | mongodb://root:toor@localhost:27017 | MongoDb Connection string |
+
+## Todo
+- Logging
+- Monitoring / Metrics on endpoints / Elastic APM (or any other) for App performance tracing
+- Handle custom request responses
+- Review usage of db model / primary key types
