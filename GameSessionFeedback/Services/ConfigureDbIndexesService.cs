@@ -1,26 +1,26 @@
 ﻿using System.Collections.Immutable;
 using System.Threading;
 using System.Threading.Tasks;
+using GameSessionFeedback.DbContexts;
 using GameSessionFeedback.Models;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using MongoDB.Driver;
 
-namespace GameSessionFeedback.DbContexts
+namespace GameSessionFeedback.Services
 {
     public class ConfigureDbIndexesService : IHostedService
     {
         private readonly IMongoDbContext _dbContext;
-        private readonly ILogger<ConfigureDbIndexesService> _logger;
         private readonly IFeedbackDatabaseSettings _dbSettings;
 
         public ConfigureDbIndexesService(IMongoDbContext dbContext, ILogger<ConfigureDbIndexesService> logger, IFeedbackDatabaseSettings dbSettings)
         {
             _dbContext = dbContext;
-            _logger = logger;
             _dbSettings = dbSettings;
         }
         
+        // Configure task to be executed on startup lifecycle to ensure unique index is set.
         public async Task StartAsync(CancellationToken cancellationToken)
         {
             var collection = _dbContext.GetCollection<SessionFeedback>(_dbSettings.SessionFeedbacksCollectionName);
