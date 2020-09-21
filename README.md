@@ -154,6 +154,20 @@ You can override some properties with the following variables:
 | GameSessionFeedbackProperties:SessionFeedbacksCollectionName | SessionFeedbacks | Name of the collection for SessionFeedbacks |
 | GameSessionFeedbackProperties:ConnectionString | mongodb://root:toor@localhost:27017 | MongoDb Connection string |
 
+## Database design
+
+A simple document with the following model has been chosen:
+```
+  "Id": ObjectId,
+  "UserId": string (probable ObjectId),
+  "SessionId": string (probable ObjectId),
+  "Rate": int,
+  "Comment": string,
+  "CreatedOn": DateTime
+```
+With a unique combined index key on UserId_SessionId to avoid duplicates as we should have
+only one feedback by user and session
+
 ## Todo
 - Logging
 - Monitoring / Metrics on endpoints / Elastic APM (or any other) for App performance tracing
