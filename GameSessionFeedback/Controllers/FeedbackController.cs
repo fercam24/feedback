@@ -28,6 +28,11 @@ namespace GameSessionFeedback.Controllers
             _feedbackService = feedbackService;
         }
 
+        /// <summary>
+        /// Gets last 15 feedbacks.
+        /// </summary>
+        /// <param name="rating">Optional parameter to add filtering on ratings</param>
+        /// <returns></returns>
         [HttpGet]
         [HttpGet("{rating}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -45,6 +50,13 @@ namespace GameSessionFeedback.Controllers
             return Ok(sessionFeedback);
         }
 
+        /// <summary>
+        /// <para>Creates feedback for a specific user/session </para>
+        /// Header["Ubi-UserId"] mandatory in the request.
+        /// </summary>
+        /// <param name="sessionId"></param>
+        /// <param name="sessionFeedback"></param>
+        /// <returns></returns>
         [HttpPost("{sessionId}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]

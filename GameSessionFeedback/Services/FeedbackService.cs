@@ -19,7 +19,6 @@ namespace GameSessionFeedback.Services
             _dbContext = dbContext;
             _sessionFeedbacks = _dbContext.GetCollection<SessionFeedback>(dbSettings.SessionFeedbacksCollectionName);
         }
-
         public async Task<IEnumerable<SessionFeedback>> GetSessionFeedbacksAsync(short? rating)
         {
             try
@@ -43,7 +42,6 @@ namespace GameSessionFeedback.Services
                 throw ex;
             }
         }
-
         public async Task<SessionFeedback> CreateFeedbackAsync(SessionFeedback feedback)
         {
             try
